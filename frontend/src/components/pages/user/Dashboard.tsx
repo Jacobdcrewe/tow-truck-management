@@ -2,6 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../ContentRouter";
 import { GET } from "../../../composables/api";
 import file from "../../../composables/urls.json";
+import Map from "../../maps/Map";
+import DispatchAddress from "../../maps/DispatchAddress";
+import AccidentAddress from "../../maps/AccidentAddress";
 
 export function Dashboard() {
   // const [exuser, setExUser] = useState(
@@ -13,15 +16,57 @@ export function Dashboard() {
   //   const val = await GET(file.me, login);
   //   setExUser(JSON.stringify(val));
   // };
-
+  const apiKey = "AIzaSyDt9NJJ1qyJHdn97UvPqluubdBPe6BJV60";
+  const [dispatchers, setDispatchers] = useState([]);
   return (
     <div className="w-full h-full min-w-[330px] overscroll-x-contain">
       <div className="pb-4 grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div className="rounded-xl p-4 bg-white overflow-hidden shadow-[0px_0px_10px_rgba(0,0,0,0.2)] md:col-span-2"></div>
-        <div className="rounded-xl col-span-1 md:col-span-2 p-4 bg-white shadow-[0px_0px_10px_rgba(0,0,0,0.2)] flex flex-col md:flex-row flex-wrap "></div>
-        <div className="rounded-xl p-4 bg-white overflow-hidden shadow-[0px_0px_10px_rgba(0,0,0,0.2)] col-span-1 md:col-span-2 xl:col-span-1 row-span-2 min-h-[270px] flex items-center"></div>
-        <div className="rounded-xl p-4 py-2 bg-white overflow-hidden shadow-[0px_0px_10px_rgba(0,0,0,0.2)] col-span-1  flex items-center justify-evenly flex-wrap xl:flex-nowrap"></div>
-        <div className="rounded-xl p-4 py-2 bg-white overflow-hidden shadow-[0px_0px_10px_rgba(0,0,0,0.2)] col-span-1 flex items-center justify-evenly flex-wrap xl:flex-nowrap"></div>
+        <div className="flex items-center justify-center col-span-1 md:col-span-2 xl:col-span-1 flex items-center">
+          <div className="rounded-xl flex items-center justify-center bg-white overflow-hidden shadow-[0px_0px_10px_rgba(0,0,0,0.2)] min-h-[270px] max-w-[800px] flex items-center">
+            <Map
+              apiKey={apiKey}
+              dispatchers={dispatchers}
+              setDispatchers={setDispatchers}
+            />
+          </div>
+        </div>
+
+        <div className="rounded-xl px-4 pb-2 space-y-2 bg-white shadow-[0px_0px_10px_rgba(0,0,0,0.2)] col-span-1 md:col-span-2 xl:col-span-1 overflow-auto max-h-[400px] ">
+          <p className="sticky top-0 pt-2 bg-white">Dispatchers</p>
+          {dispatchers.map((dispatcher: any, index: number) => {
+            if (dispatcher.type === "STATION" || dispatcher.type === "HQ") {
+              return (
+                <DispatchAddress
+                  key={index}
+                  apiKey={apiKey}
+                  station={dispatcher.name}
+                  latitude={dispatcher.lat}
+                  longitude={dispatcher.lng}
+                />
+              );
+            }
+            return null;
+          })}
+        </div>
+        <div className="rounded-xl px-4 pb-2 space-y-2 bg-white shadow-[0px_0px_10px_rgba(0,0,0,0.2)] col-span-1 md:col-span-2 xl:col-span-1 overflow-auto max-h-[400px]">
+          <p className="sticky top-0 pt-2 bg-white">Accidents</p>
+          {dispatchers.map((dispatcher: any, index: number) => {
+            if (dispatcher.type === "ACCIDENT") {
+              return (
+                <AccidentAddress
+                  key={index}
+                  apiKey={apiKey}
+                  latitude={dispatcher.lat}
+                  longitude={dispatcher.lng}
+                  dispatchers={dispatchers.filter(
+                    (type: any) => type.type !== "ACCIDENT"
+                  )}
+                />
+              );
+            }
+            return null;
+          })}
+        </div>
         {/* <div
           className="rounded-xl p-4 py-2 bg-white shadow-[0px_0px_10px_rgba(0,0,0,0.2)] hover:cursor-pointer overscroll-contain overflow-auto col-span-1 md:col-span-2"
           onClick={exampleFunction}
