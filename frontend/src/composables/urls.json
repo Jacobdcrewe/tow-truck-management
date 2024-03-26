@@ -1,0 +1,21 @@
+{
+    "login": "https://api.shapeshyft.online/api/account/v1/auth/password",
+    "account": "https://api.shapeshyft.online/api/account/v1/user/",
+    "me": "https://api.shapeshyft.online/api/account/v1/user/me",
+    "refresh_token": "https://api.shapeshyft.online/api/account/v1/auth/refresh",
+    "food_search": "https://api.shapeshyft.online/api/v1/food/search",
+    "food": "https://api.shapeshyft.online/api/v1/food",
+    "get_water": "https://api.shapeshyft.online/api/v1/health/getWater",
+    "getRandomExercises": "https://api.shapeshyft.online/api/v1/exercise/getRandomExercises",
+    "getExercisesByBodyPart": "https://api.shapeshyft.online/api/v1/exercise/getExercisesByBodyPart",
+    "post_water": "https://api.shapeshyft.online/api/v1/health/ceWater",
+    "post_sleep": "https://api.shapeshyft.online/api/v1/health/ceSleep",
+    "get_sleep": "https://api.shapeshyft.online/api/v1/health/getSleep",
+    "get_bmi": "https://api.shapeshyft.online/api/v1/health/bmi",
+    "post_bmi": "https://api.shapeshyft.online/api/v1/health/cBMI",
+    "tips": "https://api.shapeshyft.online/api/v1/health/tips",
+    "total_calories": "https://api.shapeshyft.online/api/v1/food/totalCalories",
+    "getExercisesBySearch": "https://api.shapeshyft.online/api/v1/exercise/getExercisesBySearch",
+    "steps": "https://api.shapeshyft.online/api/v1/exercise/steps",
+    "getRecipe": "https://api.shapeshyft.online/api/v1/recipe/search"
+}
