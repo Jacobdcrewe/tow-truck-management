@@ -2,21 +2,22 @@ import React, { useContext, useEffect, useState } from "react";
 import Loading from "../common/Loading";
 import urls from "../../composables/urls.json";
 import { UserContext } from "../ContentRouter";
-import { POST } from "../../composables/api";
+import { GET, POST } from "../../composables/api";
 
-function AccidentModal(props: any) {
+function AccidentInfoModal(props: any) {
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadingSave, setLoadingSave] = useState(false);
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
   const { login } = useContext(UserContext);
   useEffect(() => {
-    const fetchAddress = async () => {
+    const fetchAddress = async (lat: any, lng: any) => {
       try {
         const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${props.accidentLocation.lat},${props.accidentLocation.lng}&key=${props.apiKey}`
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${props.apiKey}`
         );
         const data = await response.json();
-        setLoading(false);
         if (data.results && data.results.length > 0) {
           setAddress(data.results[0].formatted_address);
         } else {
@@ -28,8 +29,25 @@ function AccidentModal(props: any) {
       }
     };
 
-    fetchAddress();
-  }, [props.accidentLocation]);
+    const fetchInfo = async () => {
+      try {
+        const val = await GET(urls.url + "/api/accident/" + props.id, login);
+        console.log(val);
+        if (val.success) {
+          setDescription(val.description);
+          await fetchAddress(
+            val.location.split("|")[1],
+            val.location.split("|")[0]
+          );
+          setLoading(false);
+        }
+      } catch (e) {
+        setLoading(false);
+        console.error("Error fetching accident info: ", e);
+      }
+    };
+    fetchInfo();
+  }, [props.id]);
 
   async function saveAccident() {
     setLoadingSave(true);
@@ -44,6 +62,7 @@ function AccidentModal(props: any) {
       const val = await POST(urls.url + "/api/accident/report", data, login);
       if (val.success) {
         setLoadingSave(false);
+        props.setModal(false);
       }
     } catch (e) {
       setLoadingSave(false);
@@ -63,23 +82,16 @@ function AccidentModal(props: any) {
                 {address}
               </h2>
             </div>
-            <textarea
+            <p>Description: </p>
+            <p
               id="accident-description"
-              placeholder="Enter description"
-              className="bg-neutral-100 rounded-xl p-2 w-full h-full resize-none"
-            />
-            <div className="flex w-full">
+              className="bg-neutral-100 rounded-xl p-2 w-full resize-none"
+            >
+              {description}
+            </p>
+            <div className="mt-auto flex w-full">
               <button
-                className="ml-auto bg-green-500 text-white rounded-xl w-1/6 p-2 hover:bg-green-600 "
-                onClick={() => {
-                  saveAccident();
-                  props.onSave();
-                }}
-              >
-                {loadingSave ? <Loading /> : "Submit"}
-              </button>
-              <button
-                className="ml-2 bg-red-500 text-white rounded-xl w-1/6 p-2 hover:bg-red-600"
+                className="ml-auto bg-red-500 text-white rounded-xl w-1/6 p-2 hover:bg-red-600"
                 onClick={() => props.setModal(false)}
               >
                 Cancel
@@ -92,4 +104,4 @@ function AccidentModal(props: any) {
   );
 }
 
-export default AccidentModal;
+export default AccidentInfoModal;

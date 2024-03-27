@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import AccidentInfoModal from "./AccidentInfoModal";
 
 const AccidentAddress = (props: any) => {
   const [address, setAddress] = useState("");
   const [closestDispatchers, setClosestDispatchers] = useState([] as any);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchAddress = async () => {
@@ -63,8 +65,8 @@ const AccidentAddress = (props: any) => {
         const sortedDispatchers = dispatchersWithRoutes.sort(
           (a, b) => a.duration - b.duration
         );
-        const closestThreeDispatchers = sortedDispatchers.slice(0, 3);
-        setClosestDispatchers(closestThreeDispatchers);
+        const closestDispatcher = sortedDispatchers.slice(0, 1);
+        setClosestDispatchers(closestDispatcher);
       } catch (error) {
         console.error("Error fetching dispatchers:", error);
         setClosestDispatchers([]);
@@ -75,18 +77,27 @@ const AccidentAddress = (props: any) => {
   }, [props.address, props.dispatchers]);
 
   return (
-    <div>
-      <div className="w-full rounded-lg bg-neutral-100 py-1 px-2">
+    <div id={props.id}>
+      {showModal && (
+        <AccidentInfoModal
+          apiKey={props.apiKey}
+          accidentLocation={{ lat: props.latitude, lng: props.longitude }}
+          setModal={setShowModal}
+          id={props.id}
+        />
+      )}
+      <div
+        className="w-full rounded-lg bg-neutral-100 py-1 px-2 hover:cursor-pointer hover:bg-neutral-200"
+        onClick={() => setShowModal(true)}
+      >
         {address}
         <div className="ml-2">
-          <h2>Closest Dispatchers:</h2>
-          <ul className="ml-2">
-            {closestDispatchers.map((dispatcher: any, index: any) => (
-              <li key={index}>
-                {dispatcher.name} - {dispatcher.duration} seconds
-              </li>
-            ))}
-          </ul>
+          {closestDispatchers.map((dispatcher: any, index: any) => (
+            <h2>
+              Closest Dispatchers: {dispatcher.name} - {dispatcher.duration}{" "}
+              seconds
+            </h2>
+          ))}
         </div>
       </div>
     </div>

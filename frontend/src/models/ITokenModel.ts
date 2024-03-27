@@ -8,6 +8,8 @@ export interface ITokenModel {
 export interface ILoginModel {
   login: ITokenModel;
   setLogin: any;
+  accountType: string;
+  setAccountType: any;
 }
 
 export interface IRefreshModel {

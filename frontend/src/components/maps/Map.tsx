@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 import Switcher from "../common/Switcher";
 import AccidentModal from "./AccidentModal";
 
@@ -9,12 +14,17 @@ function Map(props: any) {
     height: "400px",
   };
 
-  const center = {
+  const [center, setCenter] = useState({
     type: "HQ",
     name: "HQ",
     lat: 43.657626544332,
     lng: -79.37881708145142,
-  };
+  });
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: props.apiKey,
+    libraries: ["geometry", "drawing"],
+  });
 
   const mapOptions = {
     disableDefaultUI: true,
@@ -32,6 +42,9 @@ function Map(props: any) {
   const [markerType, setMarkerType] = useState("station");
   const [showModal, setShowModal] = useState(false);
   const [accidentLocation, setAccidentLocation] = useState({} as any);
+  const [dispatchers, setDispatchers] = useState([] as any);
+  const [accidents, setAccidents] = useState([] as any);
+
   const handleMapClick = (event: any) => {
     const newMarker = {
       type: markerType.toUpperCase(),
@@ -40,31 +53,60 @@ function Map(props: any) {
       lng: event.latLng.lng(),
     };
     if (markerType.toUpperCase() === "ACCIDENT") {
-      setShowModal(true);
-      setAccidentLocation(newMarker);
-    } else {
-      if (markers.length > 0) {
-        setMarkers((prevMarkers: any) => [...prevMarkers, newMarker]);
+      if (
+        markers.filter((marker: any) => marker.type === "STATION").length > 0
+      ) {
+        setShowModal(true);
+        setAccidentLocation(newMarker);
       } else {
-        setMarkers([center, newMarker]);
+        alert("Please add a station first");
       }
+    } else {
+      setDispatchers((prevDispatchers: any) => [...prevDispatchers, newMarker]);
     }
-    
   };
+  useEffect(() => {
+    if (isLoaded) {
+      setDispatchers([center]);
+      setAccidents([...props.accidents]);
+    }
+  }, [center, isLoaded]);
 
   useEffect(() => {
-    props.setDispatchers(markers);
-  }, [markers]);
+    if (isLoaded) {
+      setMarkers([...accidents, ...dispatchers]);
+      props.setDispatchers(dispatchers);
+    }
+  }, [dispatchers, isLoaded]);
 
+  useEffect(() => {
+    if (isLoaded) {
+      setMarkers([...accidents, ...dispatchers]);
+      props.setAccidents(accidents);
+    }
+  }, [accidents, isLoaded]);
   return (
     <>
-      {showModal && <AccidentModal accidentLocation={accidentLocation} apiKey={props.apiKey} />}
+      {showModal && (
+        <AccidentModal
+          accidentLocation={accidentLocation}
+          apiKey={props.apiKey}
+          setModal={setShowModal}
+          onSave={() => {
+            setAccidents((prevMarkers: any) => [
+              ...prevMarkers,
+              accidentLocation,
+            ]);
+            setShowModal(false);
+          }}
+        />
+      )}
       <div className="w-full h-full flex items-center justify-center relative">
         <Switcher
           className="absolute left-0 bottom-0 m-2 z-10"
           setMarkerType={setMarkerType}
         />
-        <LoadScript googleMapsApiKey={props.apiKey}>
+        {isLoaded && (
           <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
@@ -82,19 +124,10 @@ function Map(props: any) {
                   ],
                   scaledSize: new window.google.maps.Size(30, 30), // Adjust size if needed
                 }}
-                onClick={() => {
-                  setMarkers((prevMarkers: any) => {
-                    if (marker.type !== "HQ") {
-                      return prevMarkers.filter((_: any, i: any) => i !== index);
-                    } else {
-                      return prevMarkers;
-                    }
-                  });
-                }}
               />
             ))}
           </GoogleMap>
-        </LoadScript>
+        )}
       </div>
     </>
   );

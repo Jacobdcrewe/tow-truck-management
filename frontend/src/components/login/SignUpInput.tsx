@@ -3,6 +3,7 @@ import TextInput from "../common/TextInput";
 import EmailInput from "../common/EmailInput";
 import PasswordInput from "../common/PasswordInput";
 import NumberInput from "../common/NumberInput";
+import DropDownInput from "../common/DropDownInput";
 
 export interface SignUpInputProps {
   setUsername: React.SetStateAction<any>;
@@ -10,9 +11,8 @@ export interface SignUpInputProps {
   setLastName: React.SetStateAction<any>;
   setPassword: React.SetStateAction<any>;
   setEmail: React.SetStateAction<any>;
-  setAge: React.SetStateAction<any>;
-  setHeight: React.SetStateAction<any>;
-  setWeight: React.SetStateAction<any>;
+  setType: React.SetStateAction<any>;
+  setError: React.SetStateAction<any>;
 }
 
 export const SignUpInput = (props: SignUpInputProps) => {
@@ -69,45 +69,20 @@ export const SignUpInput = (props: SignUpInputProps) => {
         required={true}
         autocomplete="new-password"
       />
-      <div className="flex flex-col md:flex-row w-full gap-2">
-        <div className="md:w-1/3">
-          <NumberInput
-            placeholder="Age"
-            id="age"
-            onChange={(e: any) => {
-              props.setAge(e.target.value);
-            }}
-            required={true}
-            autocomplete="new-age"
-            min={0}
-          />
-          </div>
-          <div className="md:w-1/3">
-          <NumberInput
-            placeholder="Weight (kg)"
-            id="weight"
-            onChange={(e: any) => {
-              props.setWeight(e.target.value);
-            }}
-            required={true}
-            autocomplete="new-weight"
-            min={0}
-          />
-          </div>
-          <div className="md:w-1/3">
-          <NumberInput
-            placeholder="Height (cm)"
-            id="height"
-            onChange={(e: any) => {
-              props.setHeight(e.target.value);
-            }}
-            required={true}
-            autocomplete="new-height"
-            min={0}
-          />
-          </div>
-
-      </div>
+      <DropDownInput
+        options={["HQ_EMPLOYEE", "DRIVER"]}
+        placeholder="Select Role"
+        id="role"
+        onChange={(e: any) => {
+          if (e.target.value === "") {
+            props.setError("Please select a role");
+          } else {
+            props.setType(e.target.value);
+          }
+        }}
+        required={true}
+        autocomplete="off"
+      />
     </div>
   );
 };
