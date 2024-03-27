@@ -16,7 +16,7 @@ export function Dashboard() {
   //   const val = await GET(file.me, login);
   //   setExUser(JSON.stringify(val));
   // };
-  const apiKey = "";
+  const apiKey = "AIzaSyAw345vR31Ugeqi_eEde3AOs9GlMa-2i-k";
   const [dispatchers, setDispatchers] = useState([]);
   return (
     <div className="w-full h-full min-w-[330px] overscroll-x-contain">
