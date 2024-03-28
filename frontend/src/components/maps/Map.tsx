@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   GoogleMap,
-  LoadScript,
   Marker,
   useJsApiLoader,
 } from "@react-google-maps/api";
@@ -71,7 +70,7 @@ function Map(props: any) {
   };
   useEffect(() => {
     if (isLoaded) {
-      setDispatchers([center]);
+      setDispatchers([center, ...props.dispatchers]);
       setAccidents([...props.accidents]);
     }
   }, [center, isLoaded]);
@@ -79,14 +78,14 @@ function Map(props: any) {
   useEffect(() => {
     if (isLoaded) {
       setMarkers([...dispatchers, ...accidents]);
-      props.setDispatchers(dispatchers);
+      props.fetchDispatchers();
     }
   }, [dispatchers, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
       setMarkers([...dispatchers, ...accidents]);
-      props.setAccidents(accidents);
+      props.fetchAccidents();
     }
   }, [accidents, isLoaded]);
   return (
@@ -96,7 +95,7 @@ function Map(props: any) {
           accidentLocation={accidentLocation}
           apiKey={props.apiKey}
           modal={showAccidentModal}
-          dispatchers={dispatchers}
+          dispatchers={dispatchers.filter((dispatch: any) => (dispatch.type !== "ACCIDENT" && dispatch.type !== "HQ"))}
           setModal={setShowAccidentModal}
           onSave={() => {
             setAccidents((prevMarkers: any) => [

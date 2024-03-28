@@ -12,23 +12,28 @@ function AccidentAddModal(props: any) {
   const [closestDispatchers, setClosestDispatchers] = useState({} as any);
 
   useEffect(() => {
-    const fetchAddress = async () => {
+    const fetchAddress = async (lat: any, lng:any) => {
       try {
         const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${props.accidentLocation.lat},${props.accidentLocation.lng}&key=${props.apiKey}`
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${props.apiKey}`
         );
         const data = await response.json();
-        setLoading(false);
         if (data.results && data.results.length > 0) {
           setAddress(data.results[0].formatted_address);
           findClosestDispatchers(
-            props.accidentLocation.lat,
-            props.accidentLocation.lng
+            lat,
+            lng
           );
+          setLoading(false);
+
         } else {
           setAddress("Address not found");
+          setLoading(false);
+
         }
       } catch (error) {
+        setLoading(false);
+
         console.error("Error fetching address:", error);
         setAddress("Error fetching address");
       }
@@ -79,12 +84,13 @@ function AccidentAddModal(props: any) {
         setClosestDispatchers({});
       }
     };
-    fetchAddress();
+    fetchAddress(props.accidentLocation.lat, props.accidentLocation.lng);
   }, [
     props.showModal,
     props.dispatchers,
     props.accidentLocation.lat,
     props.accidentLocation.lng,
+    props.apiKey,
   ]);
 
   async function saveAccident() {
@@ -96,6 +102,7 @@ function AccidentAddModal(props: any) {
       const data = {
         description: description,
         location: props.accidentLocation.lng + "|" + props.accidentLocation.lat,
+        assigned_station: closestDispatchers.id,
       };
       const val = await POST(urls.url + "/api/accident/report", data, login);
       if (val.success) {

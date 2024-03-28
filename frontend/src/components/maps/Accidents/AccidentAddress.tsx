@@ -3,31 +3,31 @@ import AccidentInfoModal from "./AccidentInfoModal";
 
 const AccidentAddress = (props: any) => {
   const [address, setAddress] = useState("");
-  const [closestDispatchers, setClosestDispatchers] = useState([] as any);
   const [showModal, setShowModal] = useState(false);
+  async function fetchAddress (latitude:any, longitude:any, setState:React.SetStateAction<any>) {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${props.apiKey}`
+      );
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        const addr = props.station
+          ? props.station + ": " + data.results[0].formatted_address
+          : data.results[0].formatted_address;
+        setState(addr);
+      } else {
+        setState("Address not found");
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+      setState("Error fetching address");
+    }
+  };
+
 
   useEffect(() => {
-    const fetchAddress = async () => {
-      try {
-        const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${props.latitude},${props.longitude}&key=${props.apiKey}`
-        );
-        const data = await response.json();
-        if (data.results && data.results.length > 0) {
-          const addr = props.station
-            ? props.station + ": " + data.results[0].formatted_address
-            : data.results[0].formatted_address;
-          setAddress(addr);
-        } else {
-          setAddress("Address not found");
-        }
-      } catch (error) {
-        console.error("Error fetching address:", error);
-        setAddress("Error fetching address");
-      }
-    };
-    fetchAddress();
-  }, [props.address, props.dispatchers]);
+    fetchAddress(props.latitude, props.longitude, setAddress);
+  }, [props.address, props.dispatcher, props.latitude, props.longitude]);
 
   return (
     <div id={props.id}>
@@ -45,12 +45,7 @@ const AccidentAddress = (props: any) => {
       >
         {address}
         <div className="ml-2">
-          {closestDispatchers.map((dispatcher: any, index: any) => (
-            <h2>
-              Closest Dispatchers: {dispatcher.name} - {dispatcher.duration}{" "}
-              seconds
-            </h2>
-          ))}
+          Assigned Station: {props.dispatcher.name}
         </div>
       </div>
     </div>
