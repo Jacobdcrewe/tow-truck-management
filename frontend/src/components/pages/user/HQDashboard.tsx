@@ -95,9 +95,11 @@ export function HQDashboard() {
             <DispatchAddress
               key={index}
               apiKey={apiKey}
+              type={dispatcher.type}
               station={dispatcher.name}
               latitude={dispatcher.lat}
               longitude={dispatcher.lng}
+              id={dispatcher.id}
             />
           ))) : <Loading />
         }

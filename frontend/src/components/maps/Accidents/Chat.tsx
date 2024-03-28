@@ -1,9 +1,9 @@
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import React, { useContext, useEffect, useState } from "react";
-import Loading from "../common/Loading";
-import { UserContext } from "../ContentRouter";
-import { GET, POST } from "../../composables/api";
-import urls from "../../composables/urls.json";
+import Loading from "../../common/Loading";
+import { UserContext } from "../../ContentRouter";
+import { GET, POST } from "../../../composables/api";
+import urls from "../../../composables/urls.json";
 function Chat(props: any) {
     const { login } = useContext(UserContext)
     const [loading, setLoading] = useState(true) as any
@@ -41,8 +41,8 @@ function Chat(props: any) {
         }
     }
     return (
-        <div className="flex flex-col bg-neutral-200 rounded-xl h-72 relative ovreflow-hidden overscroll-contain shadow-[inset_0px_0px_5px_1px_#00000024]">
-            <div className="rounded-xl px-2 h-full w-full overflow-y-auto overscroll-auto space-y-2 pt-2 pb-4">
+        <div className="flex flex-col bg-neutral-200 rounded-xl relative ovreflow-hidden overscroll-contain shadow-[inset_0px_0px_5px_1px_#00000024]">
+            <div className="rounded-xl px-2 h-full w-full overflow-y-auto overscroll-auto space-y-2 pt-2 pb-4 min-h-[100px] max-h-[200px] ">
                 {loading ? (<div className="w-full h-full flex items-center justify-center"><Loading /></div>) : (
                     messages.map((message: any, index: number) => (
                         <div className="flex flex-col">

@@ -98,10 +98,7 @@ function Map(props: any) {
           dispatchers={dispatchers.filter((dispatch: any) => (dispatch.type !== "ACCIDENT" && dispatch.type !== "HQ"))}
           setModal={setShowAccidentModal}
           onSave={() => {
-            setAccidents((prevMarkers: any) => [
-              ...prevMarkers,
-              accidentLocation,
-            ]);
+            props.fetchAccidents();
             setShowAccidentModal(false);
           }}
         />
