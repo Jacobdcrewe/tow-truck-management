@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
-import Loading from "../common/Loading";
-import urls from "../../composables/urls.json";
-import { UserContext } from "../ContentRouter";
-import { GET, POST } from "../../composables/api";
+import Loading from "../../common/Loading";
+import urls from "../../../composables/urls.json";
+import { UserContext } from "../../ContentRouter";
+import { GET, POST } from "../../../composables/api";
 
 function AccidentInfoModal(props: any) {
   const [address, setAddress] = useState("");

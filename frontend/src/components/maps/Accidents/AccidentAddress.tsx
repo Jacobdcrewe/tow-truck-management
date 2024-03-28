@@ -18,7 +18,6 @@ const AccidentAddress = (props: any) => {
             ? props.station + ": " + data.results[0].formatted_address
             : data.results[0].formatted_address;
           setAddress(addr);
-          findClosestDispatchers(props.latitude, props.longitude);
         } else {
           setAddress("Address not found");
         }
@@ -27,52 +26,6 @@ const AccidentAddress = (props: any) => {
         setAddress("Error fetching address");
       }
     };
-
-    const findClosestDispatchers = async (latitude: any, longitude: any) => {
-      try {
-        const dispatchers = props.dispatchers;
-        const service = new window.google.maps.DistanceMatrixService();
-        const dispatchersWithRoutes = await Promise.all(
-          dispatchers.map(async (dispatcher: any) => {
-            return new Promise((resolve, reject) => {
-              service.getDistanceMatrix(
-                {
-                  origins: [{ lat: latitude, lng: longitude }],
-                  destinations: [{ lat: dispatcher.lat, lng: dispatcher.lng }],
-                  travelMode: google.maps.TravelMode.DRIVING,
-                },
-                (response, status) => {
-                  if (
-                    status === "OK" &&
-                    response &&
-                    response.rows &&
-                    response.rows.length > 0 &&
-                    response.rows[0].elements &&
-                    response.rows[0].elements.length > 0
-                  ) {
-                    const duration =
-                      response.rows[0].elements[0].duration.value; // Duration in seconds
-                    resolve({ ...dispatcher, duration });
-                  } else {
-                    reject("Error fetching distance matrix");
-                  }
-                }
-              );
-            });
-          })
-        );
-
-        const sortedDispatchers = dispatchersWithRoutes.sort(
-          (a, b) => a.duration - b.duration
-        );
-        const closestDispatcher = sortedDispatchers.slice(0, 1);
-        setClosestDispatchers(closestDispatcher);
-      } catch (error) {
-        console.error("Error fetching dispatchers:", error);
-        setClosestDispatchers([]);
-      }
-    };
-
     fetchAddress();
   }, [props.address, props.dispatchers]);
 

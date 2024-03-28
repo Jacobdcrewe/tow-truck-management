@@ -6,7 +6,8 @@ import {
   useJsApiLoader,
 } from "@react-google-maps/api";
 import Switcher from "../common/Switcher";
-import AccidentModal from "./AccidentModal";
+import AccidentAddModal from "./Accidents/AccidentAddModal";
+import DispatchAddModal from "./Dispatchers/DispatchAddModal";
 
 function Map(props: any) {
   const containerStyle = {
@@ -40,8 +41,10 @@ function Map(props: any) {
 
   const [markers, setMarkers] = useState([] as any);
   const [markerType, setMarkerType] = useState("station");
-  const [showModal, setShowModal] = useState(false);
+  const [showAccidentModal, setShowAccidentModal] = useState(false);
+  const [showDispatchModal, setShowDispatchModal] = useState(false);
   const [accidentLocation, setAccidentLocation] = useState({} as any);
+  const [dispatchLocation, setDispatchLocation] = useState({} as any);
   const [dispatchers, setDispatchers] = useState([] as any);
   const [accidents, setAccidents] = useState([] as any);
 
@@ -56,13 +59,14 @@ function Map(props: any) {
       if (
         markers.filter((marker: any) => marker.type === "STATION").length > 0
       ) {
-        setShowModal(true);
+        setShowAccidentModal(true);
         setAccidentLocation(newMarker);
       } else {
         alert("Please add a station first");
       }
     } else {
-      setDispatchers((prevDispatchers: any) => [...prevDispatchers, newMarker]);
+      setShowDispatchModal(true);
+      setDispatchLocation(newMarker);
     }
   };
   useEffect(() => {
@@ -74,30 +78,47 @@ function Map(props: any) {
 
   useEffect(() => {
     if (isLoaded) {
-      setMarkers([...accidents, ...dispatchers]);
+      setMarkers([...dispatchers, ...accidents]);
       props.setDispatchers(dispatchers);
     }
   }, [dispatchers, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      setMarkers([...accidents, ...dispatchers]);
+      setMarkers([...dispatchers, ...accidents]);
       props.setAccidents(accidents);
     }
   }, [accidents, isLoaded]);
   return (
     <>
-      {showModal && (
-        <AccidentModal
+      {showAccidentModal && (
+        <AccidentAddModal
           accidentLocation={accidentLocation}
           apiKey={props.apiKey}
-          setModal={setShowModal}
+          modal={showAccidentModal}
+          dispatchers={dispatchers}
+          setModal={setShowAccidentModal}
           onSave={() => {
             setAccidents((prevMarkers: any) => [
               ...prevMarkers,
               accidentLocation,
             ]);
-            setShowModal(false);
+            setShowAccidentModal(false);
+          }}
+        />
+      )}
+      {showDispatchModal && (
+        <DispatchAddModal
+          dispatchLocation={dispatchLocation}
+          apiKey={props.apiKey}
+          modal={showDispatchModal}
+          setModal={setShowDispatchModal}
+          onSave={() => {
+            setDispatchers((prevMarkers: any) => [
+              ...prevMarkers,
+              dispatchLocation,
+            ]);
+            setShowDispatchModal(false);
           }}
         />
       )}

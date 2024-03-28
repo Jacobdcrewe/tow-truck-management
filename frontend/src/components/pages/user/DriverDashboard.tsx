@@ -3,8 +3,8 @@ import { UserContext } from "../../ContentRouter";
 import { GET } from "../../../composables/api";
 import file from "../../../composables/urls.json";
 import Map from "../../maps/Map";
-import DispatchAddress from "../../maps/DispatchAddress";
-import AccidentAddress from "../../maps/AccidentAddress";
+import DispatchAddress from "../../maps/Dispatchers/DispatchAddress";
+import AccidentAddress from "../../maps/Accidents/AccidentAddress";
 
 export function DriverDashboard() {
   // const [exuser, setExUser] = useState(
