@@ -2,6 +2,13 @@ import { ITokenModel } from "../models/ITokenModel";
 //import file from "./urls.json";
 async function checkRefresh(token: ITokenModel): Promise<any> {
   try {
+    if (!token.access_token) {
+      console.log("No token found");
+      localStorage.removeItem("userLogin");
+      localStorage.removeItem("accountType");
+      window.location.href = "/";
+    }
+    
     const val = JSON.parse(atob(token.access_token.split(".")[1]));
     const expiration = val.exp ? val.exp * 1000 : 0;
     console.log(
@@ -21,7 +28,8 @@ async function checkRefresh(token: ITokenModel): Promise<any> {
         }),
       });
       console.log(response); */
-      localStorage.setItem("userLogin", "");
+      localStorage.removeItem("userLogin");
+      localStorage.removeItem("accountType");
       window.location.href = "/";
     }
   } catch (e) {
