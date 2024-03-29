@@ -11,7 +11,7 @@ import { UserContext } from "../ContentRouter";
 import BottomItem from "./BottomItem";
 
 function Sidebar(props: any) {
-  const { setLogin } = useContext(UserContext);
+  const { setLogin, setAccountType } = useContext(UserContext);
 
   const [expand, setExpand] = useState(() => {
     const setSize = sessionStorage.getItem("expandSidebar");
@@ -64,7 +64,9 @@ function Sidebar(props: any) {
             item={logoutItem}
             handleClick={() => {
               setLogin("");
+              setAccountType("");
               localStorage.removeItem("userLogin");
+              localStorage.removeItem("accountType")
             }}
             expand={expand}
           />
@@ -83,7 +85,9 @@ function Sidebar(props: any) {
             item={logoutItem}
             handleClick={() => {
               setLogin("");
+              setAccountType("");
               localStorage.removeItem("userLogin");
+              localStorage.removeItem("accountType")
             }}
           />
         </div>

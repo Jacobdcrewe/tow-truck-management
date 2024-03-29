@@ -62,15 +62,13 @@ function AccidentInfoModal(props: any) {
   async function saveChanges(id: any) {
     try {
       const sentInfo = {
-        status: optionSelected,
-        reported_by: info.reported_by,
-        assigned_to: info.assigned_to,
-        assigned_station: info.assigned_station
+        status: optionSelected
       };
       const data = await PUT(urls.url + "/api/accident/" + id + "/status", sentInfo, login);
-      props.setModal(false);
 
       if (data.success) {
+        props.setModal(false);
+
       } else {
         console.error("Error saving changes: ", data);
       }
@@ -131,7 +129,9 @@ function AccidentInfoModal(props: any) {
             <div className="mt-auto flex w-full">
             <button
                 className="ml-auto bg-green-500 text-white rounded-xl w-1/6 p-2 hover:bg-green-600"
-                onClick={() => saveChanges(props.id)}
+                onClick={() => {saveChanges(props.id); 
+                  console.log(optionSelected);
+                  props.onSave(optionSelected)}}
               >
                 Submit
               </button>

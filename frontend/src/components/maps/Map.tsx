@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   GoogleMap,
   Marker,
@@ -7,6 +7,7 @@ import {
 import Switcher from "../common/Switcher";
 import AccidentAddModal from "./Accidents/AccidentAddModal";
 import DispatchAddModal from "./Dispatchers/DispatchAddModal";
+import { UserContext } from "../ContentRouter";
 
 function Map(props: any) {
   const containerStyle = {
@@ -15,8 +16,8 @@ function Map(props: any) {
   };
 
   const [center, setCenter] = useState({
-    type: "HQ",
-    name: "HQ",
+    type: "HQ_EMPLOYEE",
+    name: "HQ_EMPLOYEE",
     lat: 43.657626544332,
     lng: -79.37881708145142,
   });
@@ -34,6 +35,7 @@ function Map(props: any) {
   };
 
   const markerIconURL = {
+    hq: "https://maps.google.com/mapfiles/ms/icons/default.png",
     station: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
     accident: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
   };
@@ -47,7 +49,12 @@ function Map(props: any) {
   const [dispatchers, setDispatchers] = useState([] as any);
   const [accidents, setAccidents] = useState([] as any);
 
+  const { accountType } = useContext(UserContext);
+
   const handleMapClick = (event: any) => {
+    props.fetchDispatchers();
+    props.fetchAccidents();
+    if (accountType !== "HQ_EMPLOYEE") return;
     const newMarker = {
       type: markerType.toUpperCase(),
       name: markerType.toUpperCase() + " " + (markers.length + 1),
@@ -69,60 +76,77 @@ function Map(props: any) {
     }
   };
   useEffect(() => {
+
     if (isLoaded) {
+      if (accountType !== "HQ_EMPLOYEE") {
+        setDispatchers([center])
+        setAccidents([...props.accidents])
+        return
+      };
       setDispatchers([center, ...props.dispatchers]);
       setAccidents([...props.accidents]);
     }
-  }, [center, isLoaded]);
+  }, [center, isLoaded, accountType]);
 
   useEffect(() => {
     if (isLoaded) {
       setMarkers([...dispatchers, ...accidents]);
-      props.fetchDispatchers();
+      if(accountType === "HQ_EMPLOYEE") {
+        props.fetchDispatchers();
+
+      }
     }
   }, [dispatchers, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      setMarkers([...dispatchers, ...accidents]);
+      if(accountType === "HQ_EMPLOYEE") {
+        props.fetchDispatchers();
+
+      }
+      console.log(accountType, dispatchers, accidents)
+
+      setMarkers([center, ...props.dispatchers, ...props.accidents]);
       props.fetchAccidents();
     }
   }, [accidents, isLoaded]);
+
   return (
     <>
-      {showAccidentModal && (
+
+      {showAccidentModal && accountType === "HQ_EMPLOYEE" && ( // Use the useContext hook to access the accountType variable
         <AccidentAddModal
           accidentLocation={accidentLocation}
           apiKey={props.apiKey}
           modal={showAccidentModal}
-          dispatchers={dispatchers.filter((dispatch: any) => (dispatch.type !== "ACCIDENT" && dispatch.type !== "HQ"))}
+          dispatchers={props.dispatchers.filter((dispatch: any) => (dispatch.type !== "ACCIDENT" && dispatch.type !== "HQ"))}
           setModal={setShowAccidentModal}
-          onSave={() => {
-            props.fetchAccidents();
+          onSave={async () => {
+            await props.fetchAccidents()
+            setAccidents((prev: any) => [...prev, accidentLocation]);
             setShowAccidentModal(false);
           }}
         />
       )}
-      {showDispatchModal && (
+      {showDispatchModal && accountType === "HQ_EMPLOYEE" && (
         <DispatchAddModal
           dispatchLocation={dispatchLocation}
           apiKey={props.apiKey}
           modal={showDispatchModal}
           setModal={setShowDispatchModal}
-          onSave={() => {
-            setDispatchers((prevMarkers: any) => [
-              ...prevMarkers,
-              dispatchLocation,
-            ]);
+          onSave={async () => {
+            await props.fetchDispatchers()
+            setDispatchers((prev: any) => [...prev, dispatchLocation]);
+
             setShowDispatchModal(false);
           }}
         />
       )}
       <div className="w-full h-full flex items-center justify-center relative">
-        <Switcher
+        {accountType === "HQ_EMPLOYEE" && <Switcher
           className="absolute left-0 bottom-0 m-2 z-10"
           setMarkerType={setMarkerType}
-        />
+        />}
         {isLoaded && (
           <GoogleMap
             mapContainerStyle={containerStyle}
@@ -131,18 +155,24 @@ function Map(props: any) {
             onClick={handleMapClick}
             options={mapOptions}
           >
-            {markers.map((marker: any, index: any) => (
-              <Marker
-                key={index}
-                position={{ lat: marker.lat, lng: marker.lng }}
-                icon={{
-                  url: markerIconURL[
-                    marker.type.toLowerCase() as keyof typeof markerIconURL
-                  ],
-                  scaledSize: new window.google.maps.Size(30, 30), // Adjust size if needed
-                }}
-              />
-            ))}
+            {markers.map((marker: any, index: any) => {
+              if (marker) {
+                const type = marker && marker.type !== null ? marker.type.toLowerCase() as keyof typeof markerIconURL : "hq";
+                return (
+                  <Marker
+                    key={index}
+                    position={{
+                      lat: marker.lat, lng: marker.lng
+                    }}
+                    icon={{
+                      url: markerIconURL[type],
+                      scaledSize: new window.google.maps.Size(30, 30), // Adjust size if needed
+                    }}
+                  />);
+              }
+
+            }
+            )}
           </GoogleMap>
         )}
       </div>

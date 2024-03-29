@@ -4,6 +4,7 @@ import AccidentInfoModal from "./AccidentInfoModal";
 const AccidentAddress = (props: any) => {
   const [address, setAddress] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [status, setStatus] = useState(props.status.replace(/_/g, ' '));
   async function fetchAddress (latitude:any, longitude:any, setState:React.SetStateAction<any>) {
     try {
       const response = await fetch(
@@ -29,6 +30,10 @@ const AccidentAddress = (props: any) => {
     fetchAddress(props.latitude, props.longitude, setAddress);
   }, [props.address, props.dispatcher, props.latitude, props.longitude]);
 
+  function Save(selected: any) {
+    console.log(selected)
+    setStatus(selected.split("_").join(" "));
+  }
   return (
     <div id={props.id}>
       {showModal && (
@@ -36,6 +41,8 @@ const AccidentAddress = (props: any) => {
           apiKey={props.apiKey}
           accidentLocation={{ lat: props.latitude, lng: props.longitude }}
           setModal={setShowModal}
+
+          onSave={Save}
           id={props.id}
         />
       )}
@@ -46,6 +53,9 @@ const AccidentAddress = (props: any) => {
         {address}
         <div className="ml-2">
           Assigned Station: {props.dispatcher.name}
+        </div>
+        <div className="ml-2">
+          Status: {status}
         </div>
       </div>
     </div>

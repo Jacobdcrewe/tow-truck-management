@@ -59,12 +59,8 @@ function DispatchAddModal(props: any) {
         {loading ? (
           <Loading />
         ) : (
-          <form
+          <div
             className="w-full h-full flex flex-col gap-2 relative"
-            onSubmit={() => {
-              saveDispatcher();
-              props.onSave();
-            }}
           >
             <h1 className="text-2xl">Add Dispatcher</h1>
             <div className="top-0 space-y-2">
@@ -82,7 +78,11 @@ function DispatchAddModal(props: any) {
               onChange={(e) => setDispatchName(e.target.value)}
             />
             <div className="flex w-full mt-auto">
-              <button className="ml-auto bg-green-500 text-white rounded-xl w-1/6 p-2 hover:bg-green-600 ">
+              <button className="ml-auto bg-green-500 text-white rounded-xl w-1/6 p-2 hover:bg-green-600 "  onClick={() => {
+                if(dispatchName.length === 0) return alert("Please enter a station name")
+                saveDispatcher();
+                props.onSave();
+            }}>
                 {loadingSave ? <Loading /> : "Submit"}
               </button>
               <button
@@ -92,7 +92,7 @@ function DispatchAddModal(props: any) {
                 Cancel
               </button>
             </div>
-          </form>
+          </div>
         )}
       </div>
     </div>

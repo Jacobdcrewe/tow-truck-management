@@ -52,6 +52,7 @@ const DispatchAddress = (props: any) => {
         id={props.id}
         apiKey={props.apiKey}
         setModal={setShowModal}
+        update={fetchInfo}
       />}
       <div className={`w-full rounded-lg bg-neutral-100 py-1 px-2 ${props.type !== "HQ" && "hover:cursor-pointer hover:bg-neutral-200"}`} onClick={() => props.type !== "HQ" && setShowModal(true)}>
         {address}

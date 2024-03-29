@@ -28,7 +28,7 @@ function DispatchInfoModal(props: any) {
             return "Error fetching address";
         }
     };
-    async function fetchInfo(){
+    async function fetchInfo() {
         try {
             const val = await GET(urls.url + "/api/station/" + props.id, login);
             console.log(val);
@@ -50,9 +50,9 @@ function DispatchInfoModal(props: any) {
         }
     };
     useEffect(() => {
-       
 
-        
+
+
         fetchInfo();
     }, [props.id]);
 
@@ -94,7 +94,10 @@ function DispatchInfoModal(props: any) {
                         <div className="mt-auto w-full flex">
                             <button
                                 className="ml-auto bg-red-500 text-white rounded-xl w-1/6 p-2 hover:bg-red-600"
-                                onClick={() => props.setModal(false)}
+                                onClick={() => {
+                                    props.update();
+                                    props.setModal(false)
+                                }}
                             >
                                 Exit
                             </button>

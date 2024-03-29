@@ -31,7 +31,8 @@ export function HQDashboard() {
           accident.lat = parseFloat(accident.location.split("|")[1]);
           accident.type = "ACCIDENT";
         });
-        await setAccidents(val.accidents);
+        val.accidents = val.accidents.filter((accident: any) => accident.status !== "COMPLETED")
+        setAccidents(val.accidents);
         setLoadingAccidents(false);
       }
     } catch (e) {
@@ -117,6 +118,8 @@ export function HQDashboard() {
                     longitude={accident.lng}
                     id={accident.id}
                     dispatcher={accident.assigned_station}
+                    status={accident.status}
+                    fetchAccidents={fetchAccidents}
                   />
                 );
               }
