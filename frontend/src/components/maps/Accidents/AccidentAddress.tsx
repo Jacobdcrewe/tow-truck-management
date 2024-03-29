@@ -57,6 +57,10 @@ const AccidentAddress = (props: any) => {
         <div className="ml-2">
           Status: {status}
         </div>
+        { props.assigned &&
+        <div className="ml-2">
+          Driver Assigned: {props.assigned.username}
+        </div>}
       </div>
     </div>
   );

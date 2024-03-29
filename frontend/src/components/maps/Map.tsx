@@ -96,7 +96,7 @@ function Map(props: any) {
 
       }
     }
-  }, [dispatchers, isLoaded]);
+  }, [dispatchers, isLoaded, accountType]);
 
   useEffect(() => {
     if (isLoaded) {
@@ -104,9 +104,7 @@ function Map(props: any) {
         props.fetchDispatchers();
 
       }
-      console.log(accountType, dispatchers, accidents)
-
-      setMarkers([center, ...props.dispatchers, ...props.accidents]);
+      setMarkers([...dispatchers, ...accidents]);
       props.fetchAccidents();
     }
   }, [accidents, isLoaded]);

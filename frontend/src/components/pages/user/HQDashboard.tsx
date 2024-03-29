@@ -119,6 +119,7 @@ export function HQDashboard() {
                     id={accident.id}
                     dispatcher={accident.assigned_station}
                     status={accident.status}
+                    assigned={accident.assigned_to}
                     fetchAccidents={fetchAccidents}
                   />
                 );

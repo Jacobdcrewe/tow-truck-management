@@ -71,6 +71,7 @@ export function DriverDashboard() {
                     dispatcher={accident.assigned_station}
                     status={accident.status}
                     fetchAccidents={fetchAccidents}
+                    assigned={accident.assigned_to}
 
                   />
               );
