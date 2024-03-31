@@ -31,7 +31,7 @@ function Drivers(props: any) {
                 user: driver_id,
                 station: props.id
             }
-            const val = await POST(`${urls.url}/api/user/add/station/`, data, login);
+            const val = await POST(`${urls.url}/api/user/add/station`, data, login);
             if (val.success) {
                 setShowModal(false);
                 setAvailableDrivers(availableDrivers.filter((driver: any) => driver.uuid !== driver_id));
