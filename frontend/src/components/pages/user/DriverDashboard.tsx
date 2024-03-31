@@ -20,7 +20,7 @@ export function DriverDashboard() {
   const [loadingAccidents, setLoadingAccidents] = useState(true);
   const fetchAccidents = async () => {
     try {
-      const val = await GET(file.url + "/api/accident", login);
+      const val = await GET(file.url + "/api/accident/", login);
       if (val.success) {
         val.accidents.forEach((accident: any) => {
           accident.lng = parseFloat(accident.location.split("|")[0]);
