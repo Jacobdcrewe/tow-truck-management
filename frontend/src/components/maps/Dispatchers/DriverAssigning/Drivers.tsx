@@ -13,7 +13,7 @@ function Drivers(props: any) {
 
     async function fetchDrivers() {
         try {
-            const val = await GET(`${urls.url}/api/user`, login);
+            const val = await GET(`${urls.url}/api/user/`, login);
             const availDrivers = val.filter((user: any) => user.type === "DRIVER" && user.station_id === null);
             if (availDrivers && availDrivers.length > 0) {
                 await setAvailableDrivers(availDrivers);
@@ -31,7 +31,7 @@ function Drivers(props: any) {
                 user: driver_id,
                 station: props.id
             }
-            const val = await POST(`${urls.url}/api/user/add/station`, data, login);
+            const val = await POST(`${urls.url}/api/user/add/station/`, data, login);
             if (val.success) {
                 setShowModal(false);
                 setAvailableDrivers(availableDrivers.filter((driver: any) => driver.uuid !== driver_id));
